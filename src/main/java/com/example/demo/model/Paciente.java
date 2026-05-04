@@ -25,5 +25,6 @@ public class Paciente {
     private String direccion;
     private Integer dni;
     private String telefono;
+    private String email;
     
 }
