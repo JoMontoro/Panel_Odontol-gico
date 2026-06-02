@@ -24,7 +24,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/pacientes/**").hasAnyRole("ODONTOLOGO", "PACIENTE")
                 .requestMatchers("/api/citas/**").hasRole("ODONTOLOGO")
-                .anyRequest().authenticated()
+                    .requestMatchers("/api/dashboard/**").hasRole("ODONTOLOGO")
+                    .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults());
 

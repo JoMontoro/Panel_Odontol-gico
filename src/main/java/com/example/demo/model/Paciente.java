@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Data
@@ -24,7 +25,13 @@ public class Paciente {
     private String apoderado;
     private String direccion;
     private Integer dni;
+
+    @Pattern(
+            regexp = "^9\\d{8}$",
+            message = "El teléfono debe iniciar con 9 y tener 9 dígitos"
+    )
     private String telefono;
+
     private String email;
     
 }
