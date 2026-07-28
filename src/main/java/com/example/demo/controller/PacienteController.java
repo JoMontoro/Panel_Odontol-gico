@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,83 +21,40 @@ public class PacienteController {
     @Autowired
     private PacienteService service;
 
-    // 🔹 CREAR
     @PostMapping
-    public Paciente save( @RequestBody Paciente p){
-
+    public Paciente save(@RequestBody Paciente p) {
         return service.save(p);
-
     }
 
-    // 🔹 LISTAR
     @GetMapping
-    public Page<Paciente> listar(@RequestParam(defaultValue = "0")int page,
-                                 @RequestParam(defaultValue = "10")int size){
-
-        return service.listarPaginado(page, size);
-
+    public Page<Paciente> listar(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size,
+                                  @RequestParam(required = false) Boolean estado) {
+        return service.listar(page, size, estado);
     }
 
-    // 🔹 OBTENER POR ID
     @GetMapping("/{id}")
-    public Paciente obtener(
-            @PathVariable Integer id
-    ){
-
-        return service
-                .buscarPorId(id)
-                .orElseThrow();
-
+    public Paciente obtener(@PathVariable Integer id) {
+        return service.buscarPorId(id).orElseThrow();
     }
 
-    // 🔥 DETALLE COMPLETO
     @GetMapping("/{id}/detalle")
-    public ResponseEntity<?> obtenerDetalle(
-            @PathVariable Integer id
-    ) {
-
-        return ResponseEntity.ok(
-                service.obtenerDetalle(id)
-        );
-
+    public ResponseEntity<Map<String, Object>> obtenerDetalle(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.obtenerDetalle(id));
     }
 
-    // 🔹 ACTUALIZAR
     @PutMapping("/{id}")
-    public Paciente actualizar(
-            @PathVariable Integer id,
-            @Validated @RequestBody Paciente p
-    ){
-
-        Paciente existente =
-                service.buscarPorId(id)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Paciente no encontrado"
-                                )
-                        );
-
-        existente.setNombre(p.getNombre());
-        existente.setApellido(p.getApellido());
-        existente.setEdad(p.getEdad());
-        existente.setApoderado(p.getApoderado());
-        existente.setDireccion(p.getDireccion());
-        existente.setDni(p.getDni());
-        existente.setTelefono(p.getTelefono());
-        existente.setEmail(p.getEmail());
-
-        return service.save(existente);
-
+    public Paciente actualizar(@PathVariable Integer id, @Validated @RequestBody Paciente p) {
+        return service.actualizar(id, p);
     }
 
-    // 🔹 ELIMINAR
+    @PutMapping("/{id}/reactivar")
+    public void reactivar(@PathVariable Integer id) {
+        service.reactivar(id);
+    }
+
     @DeleteMapping("/{id}")
-    public void eliminar(
-            @PathVariable Integer id
-    ){
-
-        service.eliminar(id);
-
+    public void eliminar(@PathVariable Integer id) {
+        service.desactivar(id);
     }
-
 }

@@ -21,11 +21,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {})
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/pacientes/**").hasAnyRole("ODONTOLOGO", "PACIENTE")
+                .requestMatchers("/api/auth/register").permitAll()
+                .requestMatchers("/api/pacientes/**").hasRole("ODONTOLOGO")
+                .requestMatchers("/api/casos/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/api/citas/**").hasRole("ODONTOLOGO")
-                    .requestMatchers("/api/dashboard/**").hasRole("ODONTOLOGO")
-                    .anyRequest().authenticated()
+                .requestMatchers("/api/dashboard/**").hasRole("ODONTOLOGO")
+                .requestMatchers("/api/historial/**").hasRole("ODONTOLOGO")
+                .requestMatchers("/uploads/**").permitAll()
+                .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults());
 
@@ -35,7 +38,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-
         config.setAllowedOrigins(List.of("http://localhost:4200"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
@@ -43,7 +45,6 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
         return source;
     }
 

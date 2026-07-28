@@ -8,6 +8,7 @@ public class DashboardDTO {
     private Long citasCompletadas;
     private Long citasPendientes;
     private Long pacientesNuevos;
+    private Long casosActivos;
     private Double facturacionMensual;
 
     private List<CitaHoyDTO> citasHoy;

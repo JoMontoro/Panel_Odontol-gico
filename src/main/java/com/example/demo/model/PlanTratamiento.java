@@ -10,17 +10,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlanTratamiento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String tratamiento;
+    private String nombre;
+    private Integer sesionesEstimadas;
+    private Double costoEstimado;
 
-    private Double costo;
-
-    private Integer sesiones;
+    @Enumerated(EnumType.STRING)
+    private EstadoPlan estado;
 
     @ManyToOne
-    @JoinColumn(name = "id_historial")
-    private HistorialClinico historial;
+    @JoinColumn(name = "id_caso_clinico")
+    private CasoClinico casoClinico;
+
+    @PrePersist
+    public void prePersist() {
+        if (estado == null) estado = EstadoPlan.PENDIENTE;
+    }
 }

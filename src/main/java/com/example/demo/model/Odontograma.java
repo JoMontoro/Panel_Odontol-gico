@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Odontograma {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer numeroDiente;
-
     private String estado;
 
     @ManyToOne
-    @JoinColumn(name = "id_historial")
-    private HistorialClinico historial;
+    @JoinColumn(name = "id_caso_clinico")
+    private CasoClinico casoClinico;
 }

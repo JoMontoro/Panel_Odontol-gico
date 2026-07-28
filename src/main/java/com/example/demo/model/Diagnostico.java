@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -15,9 +16,12 @@ public class Diagnostico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
 
+    private LocalDate fecha;
+
     @ManyToOne
-    @JoinColumn(name = "id_historial")
-    private HistorialClinico historial;
+    @JoinColumn(name = "id_caso_clinico")
+    private CasoClinico casoClinico;
 }

@@ -1,37 +1,33 @@
-
 package com.example.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Paciente {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_paciente;
-    
+    private Integer id;
+
+    private String dni;
     private String nombre;
     private String apellido;
-    private Integer edad;
-    private String apoderado;
-    private String direccion;
-    private Integer dni;
-
-    @Pattern(
-            regexp = "^9\\d{8}$",
-            message = "El teléfono debe iniciar con 9 y tener 9 dígitos"
-    )
+    private LocalDate fechaNacimiento;
     private String telefono;
-
     private String email;
-    
+    private String direccion;
+    private String apoderado;
+    private Boolean estado;
+
+    @PrePersist
+    public void prePersist() {
+        if (estado == null) estado = true;
+    }
 }
