@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -25,6 +27,9 @@ public class PlanTratamiento {
     @ManyToOne
     @JoinColumn(name = "id_caso_clinico")
     private CasoClinico casoClinico;
+
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlanDetalle> planDetalles;
 
     @PrePersist
     public void prePersist() {

@@ -29,6 +29,14 @@ public class Cita {
     @JoinColumn(name = "id_odontologo", nullable = false)
     private Usuario odontologo;
 
+    @ManyToOne
+    @JoinColumn(name = "id_plan_detalle")
+    private PlanDetalle planDetalle;
+
+    @ManyToOne
+    @JoinColumn(name = "id_tratamiento")
+    private Tratamiento tratamiento;
+
     private LocalDate fecha;
     private LocalTime horaInicio;
     private LocalTime horaFin;

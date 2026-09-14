@@ -3,8 +3,12 @@ package com.example.demo.service;
 import com.example.demo.model.Cita;
 import com.example.demo.model.CasoClinico;
 import com.example.demo.model.EstadoCita;
+import com.example.demo.model.PlanDetalle;
 import com.example.demo.repository.CitaRepository;
 import com.example.demo.repository.CasoClinicoRepository;
+import com.example.demo.repository.PlanDetalleRepository;
+import com.example.demo.model.Tratamiento;
+import com.example.demo.repository.TratamientoRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,11 +28,35 @@ public class CitaService {
     @Autowired
     private CasoClinicoRepository casoRepo;
 
+    @Autowired
+    private PlanDetalleRepository planDetalleRepo;
+
+    @Autowired
+    private TratamientoRepository tratamientoRepo;
+
     public Cita save(Cita cita) {
-        CasoClinico caso = casoRepo.findById(cita.getCasoClinico().getId())
-                .orElseThrow(() -> new RuntimeException("Caso clínico no encontrado"));
-        cita.setCasoClinico(caso);
-        cita.setPaciente(caso.getPaciente());
+        if (cita.getPlanDetalle() != null && cita.getPlanDetalle().getId() != null) {
+            PlanDetalle planDetalle = planDetalleRepo.findById(cita.getPlanDetalle().getId())
+                    .orElseThrow(() -> new RuntimeException("Detalle de plan no encontrado"));
+            
+            cita.setPlanDetalle(planDetalle);
+            cita.setCasoClinico(planDetalle.getPlan().getCasoClinico());
+            cita.setPaciente(planDetalle.getPlan().getCasoClinico().getPaciente());
+            
+            if (cita.getOdontologo() == null) {
+                cita.setOdontologo(planDetalle.getPlan().getCasoClinico().getOdontologoResponsable());
+            }
+            if (cita.getTratamiento() != null && cita.getTratamiento().getId() != null) {
+                Tratamiento t = tratamientoRepo.findById(cita.getTratamiento().getId())
+                        .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+                cita.setTratamiento(t);
+            }
+        } else {
+            CasoClinico caso = casoRepo.findById(cita.getCasoClinico().getId())
+                    .orElseThrow(() -> new RuntimeException("Caso clínico no encontrado"));
+            cita.setCasoClinico(caso);
+            cita.setPaciente(caso.getPaciente());
+        }
         return repo.save(cita);
     }
 
@@ -49,11 +77,26 @@ public class CitaService {
     public Cita actualizar(Integer id, Cita data) {
         Cita cita = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-        if (data.getCasoClinico() != null && data.getCasoClinico().getId() != null) {
+        
+        if (data.getPlanDetalle() != null && data.getPlanDetalle().getId() != null) {
+            PlanDetalle planDetalle = planDetalleRepo.findById(data.getPlanDetalle().getId())
+                    .orElseThrow(() -> new RuntimeException("Detalle de plan no encontrado"));
+            cita.setPlanDetalle(planDetalle);
+            cita.setCasoClinico(planDetalle.getPlan().getCasoClinico());
+            cita.setPaciente(planDetalle.getPlan().getCasoClinico().getPaciente());
+        } else if (data.getCasoClinico() != null && data.getCasoClinico().getId() != null) {
             CasoClinico caso = casoRepo.findById(data.getCasoClinico().getId())
                     .orElseThrow(() -> new RuntimeException("Caso clínico no encontrado"));
             cita.setCasoClinico(caso);
             cita.setPaciente(caso.getPaciente());
+        }
+        if (data.getTratamiento() != null && data.getTratamiento().getId() != null) {
+            Tratamiento t = tratamientoRepo.findById(data.getTratamiento().getId())
+                    .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+            cita.setTratamiento(t);
+        } else if (data.getTratamiento() == null) {
+            // Si se envía null explícito, limpiar el tratamiento
+            cita.setTratamiento(null);
         }
         if (data.getOdontologo() != null) {
             cita.setOdontologo(data.getOdontologo());
@@ -93,5 +136,9 @@ public class CitaService {
         com.example.demo.model.Usuario odontologo = new com.example.demo.model.Usuario();
         odontologo.setId(idOdontologo);
         return repo.findByOdontologoAndFechaOrderByHoraInicioAsc(odontologo, fecha);
+    }
+
+    public List<Cita> listarPorPaciente(Integer pacienteId) {
+        return repo.findByPacienteIdOrderByFechaDescHoraInicioDesc(pacienteId);
     }
 }

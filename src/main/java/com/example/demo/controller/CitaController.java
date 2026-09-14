@@ -1,10 +1,15 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CitaConTratamientoDTO;
+import com.example.demo.dto.TratamientoDisponibleDTO;
 import com.example.demo.model.Cita;
 import com.example.demo.model.EstadoCita;
+import com.example.demo.model.PlanDetalle;
 import com.example.demo.service.CitaService;
+import com.example.demo.service.PlanDetalleService;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,6 +23,9 @@ public class CitaController {
 
     @Autowired
     private CitaService service;
+
+    @Autowired
+    private PlanDetalleService planDetalleService;
 
     @PostMapping
     public Cita save(@RequestBody Cita c) {
@@ -69,5 +77,50 @@ public class CitaController {
             @PathVariable Integer idOdontologo,
             @PathVariable String fecha) {
         return service.listarPorOdontologoYFecha(idOdontologo, java.time.LocalDate.parse(fecha));
+    }
+
+    @GetMapping("/paciente/{pacienteId}/tratamientos-disponibles")
+    public List<TratamientoDisponibleDTO> obtenerTratamientosDisponibles(@PathVariable Integer pacienteId) {
+        List<PlanDetalle> detalles = planDetalleService.listarPendientesPorPaciente(pacienteId);
+        return detalles.stream().map(d -> new TratamientoDisponibleDTO(
+                d.getId(),
+                d.getPlan().getId(),
+                d.getPlan().getNombre(),
+                d.getTratamiento() != null ? d.getTratamiento().getNombre() : d.getProcedimiento(),
+                d.getTratamiento() != null ? d.getTratamiento().getCategoria() : "SIN_CATEGORIA",
+                d.getOrden(),
+                d.getDiente(),
+                d.getCara(),
+                d.getPrecio(),
+                d.getEstado(),
+                d.getPlan().getSesionesEstimadas(),
+                (int) d.getPlan().getPlanDetalles().stream().filter(pd -> pd.getEstado() == com.example.demo.model.EstadoDetalle.REALIZADO).count()
+        )).collect(Collectors.toList());
+    }
+
+    @GetMapping("/paciente/{pacienteId}/con-tratamiento")
+    public List<CitaConTratamientoDTO> listarConTratamientoPorPaciente(@PathVariable Integer pacienteId) {
+        List<Cita> citas = service.listarPorPaciente(pacienteId);
+        return citas.stream().map(c -> {
+            PlanDetalle pd = c.getPlanDetalle();
+            return new CitaConTratamientoDTO(
+                    c.getId(),
+                    c.getFecha(),
+                    c.getHoraInicio(),
+                    c.getHoraFin(),
+                    c.getTipo(),
+                    c.getEstado(),
+                    c.getOdontologo() != null ? c.getOdontologo().getNombre() : null,
+                    c.getOdontologo() != null ? c.getOdontologo().getApellido() : null,
+                    pd != null && pd.getTratamiento() != null ? pd.getTratamiento().getNombre() : 
+                        (pd != null ? pd.getProcedimiento() : c.getCasoClinico().getMotivoConsulta()),
+                    pd != null && pd.getTratamiento() != null ? pd.getTratamiento().getCategoria() : "SIN_CATEGORIA",
+                    pd != null ? pd.getDiente() : null,
+                    pd != null ? pd.getCara() : null,
+                    pd != null ? pd.getEstado() : null,
+                    pd != null ? pd.getPrecio() : null,
+                    c.getObservaciones()
+            );
+        }).collect(Collectors.toList());
     }
 }

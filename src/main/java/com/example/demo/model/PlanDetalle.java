@@ -26,6 +26,13 @@ public class PlanDetalle {
     @JoinColumn(name = "id_plan")
     private PlanTratamiento plan;
 
+    @ManyToOne
+    @JoinColumn(name = "id_tratamiento")
+    private Tratamiento tratamiento;
+
+    private Integer diente;
+    private String cara;
+
     @PrePersist
     public void prePersist() {
         if (estado == null) estado = EstadoDetalle.PENDIENTE;

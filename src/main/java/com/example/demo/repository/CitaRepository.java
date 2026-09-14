@@ -25,6 +25,8 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
 
     Optional<Cita> findFirstByPacienteOrderByFechaDesc(Paciente paciente);
 
+    List<Cita> findByPacienteIdOrderByFechaDescHoraInicioDesc(Integer pacienteId);
+
     @Query("SELECT c FROM Cita c WHERE " +
             "(:q = '' OR LOWER(c.paciente.nombre) LIKE LOWER(CONCAT(CONCAT('%', :q), '%')) " +
             " OR LOWER(c.paciente.apellido) LIKE LOWER(CONCAT(CONCAT('%', :q), '%')) " +
