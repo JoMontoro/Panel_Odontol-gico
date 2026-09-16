@@ -27,6 +27,7 @@ public class securityconfig {
                 .requestMatchers("/api/citas/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/api/dashboard/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/api/historial/**").hasRole("ODONTOLOGO")
+                .requestMatchers("/api/presupuestos/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated()
             )
