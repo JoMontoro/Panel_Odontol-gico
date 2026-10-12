@@ -31,11 +31,23 @@ public class PlanDetalleController {
     @PostMapping
     public PlanDetalle agregarDetalle(@PathVariable Integer planId,
                                        @RequestBody Map<String, Object> body) {
-        Integer tratamientoId = (Integer) body.get("tratamientoId");
-        Integer orden = (Integer) body.get("orden");
-        Integer diente = (Integer) body.get("diente");
+        Integer tratamientoId = toInt(body.get("tratamientoId"));
+        Integer orden = toInt(body.get("orden"));
+        Integer diente = toInt(body.get("diente"));
         String cara = (String) body.get("cara");
         return service.agregarDetalle(planId, tratamientoId, orden, diente, cara);
+    }
+
+    /** Edicion completa del tratamiento del plan, incluido el precio a cobrar. */
+    @PutMapping("/{detalleId}")
+    public ResponseEntity<?> actualizarDetalle(@PathVariable Integer planId,
+                                               @PathVariable Integer detalleId,
+                                               @RequestBody Map<String, Object> body) {
+        try {
+            return ResponseEntity.ok(service.actualizarDetalle(planId, detalleId, body));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
     }
 
     @PutMapping("/{detalleId}/estado")
@@ -51,5 +63,10 @@ public class PlanDetalleController {
                                           @PathVariable Integer detalleId) {
         service.eliminar(detalleId);
         return ResponseEntity.noContent().build();
+    }
+
+    private static Integer toInt(Object valor) {
+        if (valor == null || valor.toString().isBlank()) return null;
+        return Integer.valueOf(valor.toString());
     }
 }

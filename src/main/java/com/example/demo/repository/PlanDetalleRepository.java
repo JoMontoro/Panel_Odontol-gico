@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import com.example.demo.model.CasoClinico;
 import com.example.demo.model.PlanDetalle;
 import com.example.demo.model.PlanTratamiento;
 import com.example.demo.model.EstadoDetalle;
@@ -10,4 +11,10 @@ public interface PlanDetalleRepository extends JpaRepository<PlanDetalle, Intege
     List<PlanDetalle> findByPlanOrderByOrdenAsc(PlanTratamiento plan);
     List<PlanDetalle> findByPlanAndEstado(PlanTratamiento plan, EstadoDetalle estado);
     List<PlanDetalle> findByPlan_CasoClinico_Paciente_IdAndEstado(Integer pacienteId, EstadoDetalle estado);
+
+    List<PlanDetalle> findByPlan_CasoClinico(CasoClinico casoClinico);
+
+    boolean existsByTratamiento_Id(Integer tratamientoId);
+
+    long countByPlan_CasoClinico_IdAndEstado(Integer casoId, EstadoDetalle estado);
 }

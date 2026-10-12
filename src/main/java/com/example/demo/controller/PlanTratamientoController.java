@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.GenerarPlanDTO;
 import com.example.demo.model.PlanTratamiento;
 import com.example.demo.model.EstadoPlan;
 import com.example.demo.service.PlanTratamientoService;
@@ -36,6 +37,35 @@ public class PlanTratamientoController {
         Double costoEstimado = body.get("costoEstimado") != null 
             ? Double.valueOf(body.get("costoEstimado").toString()) : null;
         return service.crear(casoId, nombre, sesionesEstimadas, costoEstimado);
+    }
+
+    /**
+     * Genera el plan del caso con los tratamientos que elige el odontologo y
+     * deja el presupuesto listo para generarse o editarse.
+     */
+    @PostMapping("/caso/{casoId}/generar")
+    public ResponseEntity<?> generar(@PathVariable Integer casoId,
+                                     @RequestBody GenerarPlanDTO body) {
+        try {
+            return ResponseEntity.ok(service.generarDesdeTratamientos(casoId, body));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    /**
+     * Genera el plan del caso automaticamente desde el diagnostico y el motivo de
+     * consulta. El odontologo puede editarlo despues: cambiar precios, quitar o
+     * agregar tratamientos, y el presupuesto se recalcula automaticamente.
+     */
+    @PostMapping("/caso/{casoId}/automatico")
+    public ResponseEntity<?> generarAutomatico(@PathVariable Integer casoId,
+                                               @RequestParam(defaultValue = "false") boolean forzar) {
+        try {
+            return ResponseEntity.ok(service.generarDesdeDiagnostico(casoId, forzar));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
     }
 
     @PutMapping("/{planId}/estado")

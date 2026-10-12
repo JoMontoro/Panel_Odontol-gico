@@ -21,6 +21,13 @@ public class Presupuesto {
     private Double adelanto;
     private Double saldoPendiente;
 
+    /**
+     * Monto final a cobrar, editable por el odontologo. Cuando tiene valor,
+     * sobrescribe el total calculado (subtotal - descuento). Si es null,
+     * el total se recalcula a partir de los precios de los tratamientos.
+     */
+    private Double montoPersonalizado;
+
     @Enumerated(EnumType.STRING)
     private EstadoPresupuesto estado;
 

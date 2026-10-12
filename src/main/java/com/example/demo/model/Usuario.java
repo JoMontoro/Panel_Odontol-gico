@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -14,8 +15,10 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String username;
+
+    /** Nunca se expone en las respuestas JSON ( Paciente ya referencia a Usuario ). */
+    @JsonIgnore
     private String password;
     private String nombre;
     private String apellido;

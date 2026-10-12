@@ -36,8 +36,9 @@ public class CitaController {
     public Page<Cita> listar(@RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "10") int size,
                              @RequestParam(required = false) String q,
-                             @RequestParam(required = false) EstadoCita estado) {
-        return service.listarPaginado(page, size, q, estado);
+                             @RequestParam(required = false) EstadoCita estado,
+                             @RequestParam(defaultValue = "false") boolean mostrarOcultas) {
+        return service.listarPaginado(page, size, q, estado, mostrarOcultas);
     }
 
     @GetMapping("/{id}")

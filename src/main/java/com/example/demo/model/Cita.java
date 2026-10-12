@@ -47,6 +47,19 @@ public class Cita {
     @Enumerated(EnumType.STRING)
     private EstadoCita estado;
 
+    /**
+     * Se activa cuando el paciente cancelo el total de su presupuesto de
+     * tratamientos. La cita pasa a FINALIZADA y deja de mostrarse en el listado
+     * de citas hasta que se active el filtro "Mostrar cerradas".
+     */
+    private Boolean cerradaPorPago;
+
     @Column(columnDefinition = "TEXT")
     private String observaciones;
+
+    @PrePersist
+    public void prePersist() {
+        if (estado == null) estado = com.example.demo.model.EstadoCita.PROGRAMADA;
+        if (cerradaPorPago == null) cerradaPorPago = false;
+    }
 }

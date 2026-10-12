@@ -28,6 +28,13 @@ public class CasoClinico {
     private LocalDate fechaFin;
     private String motivoConsulta;
 
+    /**
+     * Diagnostico clinico del caso. Es la base para armar automaticamente el plan
+     * de tratamiento: el odontologo lo escribe y el sistema propone los
+     * tratamientos del catalogo que corresponden, que luego puede editar.
+     */
+    private String diagnostico;
+
     @Enumerated(EnumType.STRING)
     private EstadoCaso estado;
 

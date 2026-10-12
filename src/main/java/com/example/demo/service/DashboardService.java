@@ -30,17 +30,34 @@ public class DashboardService {
     @Autowired
     private CasoClinicoRepository casoRepo;
 
+    @Autowired
+    private SesionActual sesion;
+
+    /**
+     * Las cifras del panel corresponden a la cartera del odontologo conectado.
+     * El ADMIN (supervisor) ve los totales de ambos.
+     */
     public DashboardDTO obtenerDashboard() {
         DashboardDTO dto = new DashboardDTO();
         LocalDate hoy = LocalDate.now();
+        Integer odoId = sesion.odontologoId();
+        boolean admin = odoId == SesionActual.SIN_FILTRO;
 
-        dto.setCitasCompletadas(citaRepo.countByEstado(EstadoCita.FINALIZADA));
-        dto.setCitasPendientes(citaRepo.countByEstado(EstadoCita.PROGRAMADA));
-        dto.setPacientesNuevos(pacienteRepo.count());
-        dto.setCasosActivos(casoRepo.countByEstado(EstadoCaso.EN_PROCESO));
+        dto.setCitasCompletadas(admin
+                ? citaRepo.countByEstado(EstadoCita.FINALIZADA)
+                : citaRepo.countByEstadoAndOdontologo_Id(EstadoCita.FINALIZADA, odoId));
+        dto.setCitasPendientes(admin
+                ? citaRepo.countByEstado(EstadoCita.PROGRAMADA)
+                : citaRepo.countByEstadoAndOdontologo_Id(EstadoCita.PROGRAMADA, odoId));
+        dto.setPacientesNuevos(admin ? pacienteRepo.count() : pacienteRepo.countByOdontologo_Id(odoId));
+        dto.setCasosActivos(admin
+                ? casoRepo.countByEstado(EstadoCaso.EN_PROCESO)
+                : casoRepo.countByEstadoAndOdontologoResponsable_Id(EstadoCaso.EN_PROCESO, odoId));
         dto.setFacturacionMensual(14500.0);
 
-        List<Cita> citasHoy = citaRepo.findByFechaOrderByHoraInicioAsc(hoy);
+        List<Cita> citasHoy = admin
+                ? citaRepo.findByFechaOrderByHoraInicioAsc(hoy)
+                : citaRepo.findByOdontologo_IdAndFechaOrderByHoraInicioAsc(odoId, hoy);
         List<CitaHoyDTO> citasHoyDTO = new ArrayList<>();
 
         for (Cita c : citasHoy) {
@@ -54,7 +71,9 @@ public class DashboardService {
         }
         dto.setCitasHoy(citasHoyDTO);
 
-        List<Paciente> pacientes = pacienteRepo.findByEstadoTrue();
+        List<Paciente> pacientes = admin
+                ? pacienteRepo.findByEstadoTrue()
+                : pacienteRepo.findByEstadoAndOdontologo_IdOrderByIdDesc(true, odoId);
         List<PacienteRecienteDTO> recientes = new ArrayList<>();
 
         for (Paciente p : pacientes) {

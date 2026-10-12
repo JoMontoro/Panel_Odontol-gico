@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<lombok.version>1.18.46</lombok.version>
+		<jjwt.version>0.11.5</jjwt.version>
                 <start-class>com.example.demo.DemoApplication</start-class>
 	</properties>
 	<dependencies>
@@ -54,6 +55,31 @@
             <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- CORREO (recuperacion de contrasena via Gmail SMTP) -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-mail</artifactId>
+            </dependency>
+
+            <!-- JWT (token de sesion para login con contrasena y con Google) -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
                 <scope>runtime</scope>
             </dependency>
 

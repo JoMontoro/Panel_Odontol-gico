@@ -14,4 +14,13 @@ public interface PlanTratamientoRepository extends JpaRepository<PlanTratamiento
     List<PlanTratamiento> findByCasoClinicoPacienteAndEstado(
             Paciente paciente,
             EstadoPlan estado
-    );}
+    );
+
+    List<PlanTratamiento> findByCasoClinico_IdOrderByIdAsc(Integer casoId);
+
+    List<PlanTratamiento> findByCasoClinico_IdAndEstadoIn(Integer casoId, List<EstadoPlan> estados);
+
+    List<PlanTratamiento> findByCasoClinico_Paciente_Id(Integer pacienteId);
+
+    long countByCasoClinico_Paciente_Id(Integer pacienteId);
+}

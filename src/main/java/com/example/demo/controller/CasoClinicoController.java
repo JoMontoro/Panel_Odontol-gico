@@ -34,13 +34,16 @@ public class CasoClinicoController {
     public CasoClinico crear(@PathVariable Integer pacienteId,
                              @RequestBody Map<String, String> body,
                              Authentication auth) {
-        return service.crear(pacienteId, auth.getName(), body.get("motivoConsulta"));
+        return service.crear(pacienteId, auth.getName(),
+                body.get("motivoConsulta"), body.get("diagnostico"));
     }
 
     @PutMapping("/casos/{id}")
     public CasoClinico actualizar(@PathVariable Integer id,
                                   @RequestBody Map<String, String> body) {
-        return service.actualizar(id, body.get("motivoConsulta"), body.get("estado"));
+        boolean vieneDiagnostico = body.containsKey("diagnostico");
+        return service.actualizar(id, body.get("motivoConsulta"), body.get("estado"),
+                body.get("diagnostico"), vieneDiagnostico);
     }
 
     @DeleteMapping("/casos/{id}")
