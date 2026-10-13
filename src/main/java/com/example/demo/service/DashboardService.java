@@ -9,6 +9,7 @@ import com.example.demo.model.EstadoCaso;
 import com.example.demo.repository.CitaRepository;
 import com.example.demo.repository.PacienteRepository;
 import com.example.demo.repository.CasoClinicoRepository;
+import com.example.demo.repository.PagoRepository;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -29,6 +30,9 @@ public class DashboardService {
 
     @Autowired
     private CasoClinicoRepository casoRepo;
+
+    @Autowired
+    private PagoRepository pagoRepo;
 
     @Autowired
     private SesionActual sesion;
@@ -53,7 +57,12 @@ public class DashboardService {
         dto.setCasosActivos(admin
                 ? casoRepo.countByEstado(EstadoCaso.EN_PROCESO)
                 : casoRepo.countByEstadoAndOdontologoResponsable_Id(EstadoCaso.EN_PROCESO, odoId));
-        dto.setFacturacionMensual(14500.0);
+        // Facturacion real del mes: suma de los abonos (en soles) registrados
+        // desde el primer dia del mes hasta hoy, para la cartera del odontologo.
+        LocalDate inicioMes = hoy.withDayOfMonth(1);
+        LocalDate inicioMesSiguiente = inicioMes.plusMonths(1);
+        Double facturadoMes = pagoRepo.sumarPorCarteraYRango(odoId, inicioMes, inicioMesSiguiente);
+        dto.setFacturacionMensual(facturadoMes != null ? facturadoMes : 0.0);
 
         List<Cita> citasHoy = admin
                 ? citaRepo.findByFechaOrderByHoraInicioAsc(hoy)

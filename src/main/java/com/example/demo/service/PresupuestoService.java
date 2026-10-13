@@ -10,12 +10,14 @@ import com.example.demo.model.EstadoDetalle;
 import com.example.demo.model.EstadoPlan;
 import com.example.demo.model.EstadoPresupuesto;
 import com.example.demo.model.Paciente;
+import com.example.demo.model.Pago;
 import com.example.demo.model.PlanDetalle;
 import com.example.demo.model.PlanTratamiento;
 import com.example.demo.model.Presupuesto;
 import com.example.demo.repository.CasoClinicoRepository;
 import com.example.demo.repository.CitaRepository;
 import com.example.demo.repository.PacienteRepository;
+import com.example.demo.repository.PagoRepository;
 import com.example.demo.repository.PlanDetalleRepository;
 import com.example.demo.repository.PlanTratamientoRepository;
 import com.example.demo.repository.PresupuestoRepository;
@@ -59,6 +61,9 @@ public class PresupuestoService {
 
     @Autowired
     private PacienteRepository pacienteRepo;
+
+    @Autowired
+    private PagoRepository pagoRepo;
 
     @Autowired
     private SesionActual sesion;
@@ -259,7 +264,15 @@ public class PresupuestoService {
             }
         }
 
-        return recalcularYSalvar(pre);
+        RegistroPagoDTO resultado = recalcularYSalvar(pre);
+
+        Pago pago = new Pago();
+        pago.setMonto(round2(monto));
+        pago.setFecha(LocalDate.now());
+        pago.setPresupuesto(resultado.getPresupuesto());
+        pagoRepo.save(pago);
+
+        return resultado;
     }
 
     /**
