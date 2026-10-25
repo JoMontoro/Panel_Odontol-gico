@@ -47,6 +47,8 @@ import org.springframework.data.repository.query.Param;
 
     boolean existsByTratamiento_Id(Integer tratamientoId);
 
+    List<Cita> findByTratamiento_Id(Integer tratamientoId);
+
     long countByCasoClinico_IdAndEstadoIn(Integer casoId, List<EstadoCita> estados);
 
     long countByOdontologo_IdAndFechaAndEstado(Integer odontologoId, LocalDate fecha, EstadoCita estado);

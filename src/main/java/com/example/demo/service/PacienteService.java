@@ -10,7 +10,9 @@ import com.example.demo.model.ControlEvolucion;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.PacienteRepository;
 import com.example.demo.repository.HistorialRepository;
+import com.example.demo.repository.ConsentimientoInformadoRepository;
 import com.example.demo.repository.CasoClinicoRepository;
+import com.example.demo.model.ConsentimientoInformado;
 import com.example.demo.repository.PlanDetalleRepository;
 import com.example.demo.repository.ControlEvolucionRepository;
 import com.example.demo.repository.PresupuestoRepository;
@@ -39,6 +41,9 @@ public class PacienteService {
 
     @Autowired
     private HistorialRepository historialRepo;
+
+    @Autowired
+    private ConsentimientoInformadoRepository consentimientoRepo;
 
     @Autowired
     private CasoClinicoRepository casoRepo;
@@ -253,6 +258,10 @@ public class PacienteService {
             presupuestoActivo = presupuestoRepo.findFirstByCasoClinicoOrderByIdDesc(activo).orElse(null);
         }
         response.put("presupuesto", presupuestoActivo);
+
+        // Consentimientos informados del paciente (modulo de consentimiento y firma)
+        List<ConsentimientoInformado> consentimientos = consentimientoRepo.findByPacienteOrderByFechaAceptacionDesc(paciente);
+        response.put("consentimientosInformados", consentimientos);
 
         return response;
     }

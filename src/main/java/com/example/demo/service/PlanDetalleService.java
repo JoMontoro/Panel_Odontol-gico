@@ -62,6 +62,23 @@ public class PlanDetalleService {
         return repo.findByPlanOrderByOrdenAsc(planDeCartera(planId));
     }
 
+    /**
+     * El plan solo puede usar tratamientos del catalogo propio: el catalogo de
+     * cada odontologo es privado y no se comparte con el colega.
+     */
+    private void exigirTratamientoPropio(Tratamiento tratamiento) {
+        if (sesion.esAdmin(sesion.usuario())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "El rol ADMIN es solo de lectura: no puede modificar el plan de tratamiento.");
+        }
+        Integer odoId = sesion.odontologoId();
+        if (tratamiento.getOdontologo() == null
+                || !tratamiento.getOdontologo().getId().equals(odoId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "El tratamiento \"" + tratamiento.getNombre() + "\" pertenece al catalogo de otro odontologo.");
+        }
+    }
+
     public List<PlanDetalle> listarPendientesPorPlan(Integer planId) {
         return repo.findByPlanAndEstado(planDeCartera(planId), EstadoDetalle.PENDIENTE);
     }
@@ -87,6 +104,7 @@ public class PlanDetalleService {
 
         Tratamiento tratamiento = tratamientoRepo.findById(tratamientoId)
                 .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+        exigirTratamientoPropio(tratamiento);
 
         PlanDetalle detalle = new PlanDetalle();
         detalle.setPlan(plan);
@@ -143,8 +161,10 @@ public class PlanDetalleService {
             if (tratamientoId == null) {
                 detalle.setTratamiento(null);
             } else {
-                detalle.setTratamiento(tratamientoRepo.findById(tratamientoId)
-                        .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado")));
+                Tratamiento tratamiento = tratamientoRepo.findById(tratamientoId)
+                        .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+                exigirTratamientoPropio(tratamiento);
+                detalle.setTratamiento(tratamiento);
             }
         }
         if (body.containsKey("estado") && body.get("estado") != null) {

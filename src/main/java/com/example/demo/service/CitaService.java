@@ -64,9 +64,7 @@ public class CitaService {
             cita.setPaciente(planDetalle.getPlan().getCasoClinico().getPaciente());
 
             if (cita.getTratamiento() != null && cita.getTratamiento().getId() != null) {
-                Tratamiento t = tratamientoRepo.findById(cita.getTratamiento().getId())
-                        .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
-                cita.setTratamiento(t);
+                cita.setTratamiento(exigirTratamientoPropio(cita.getTratamiento().getId()));
             }
         } else {
             CasoClinico caso = casoRepo.findById(cita.getCasoClinico().getId())
@@ -92,6 +90,22 @@ public class CitaService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Ese paciente pertenece a la cartera de otro odontologo.");
         }
+    }
+
+    /**
+     * La cita solo puede usar un tratamiento del catalogo propio: el catalogo de
+     * cada odontologo es privado y no se comparte con el colega.
+     */
+    private Tratamiento exigirTratamientoPropio(Integer tratamientoId) {
+        Tratamiento t = tratamientoRepo.findById(tratamientoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tratamiento no encontrado"));
+        Integer dueno = t.getOdontologo() != null ? t.getOdontologo().getId() : null;
+        Integer odoId = sesion.odontologoId();
+        if (dueno == null || !dueno.equals(odoId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "El tratamiento \"" + t.getNombre() + "\" pertenece al catalogo de otro odontologo.");
+        }
+        return t;
     }
 
     /**
@@ -153,9 +167,7 @@ public class CitaService {
             cita.setPaciente(caso.getPaciente());
         }
         if (data.getTratamiento() != null && data.getTratamiento().getId() != null) {
-            Tratamiento t = tratamientoRepo.findById(data.getTratamiento().getId())
-                    .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
-            cita.setTratamiento(t);
+            cita.setTratamiento(exigirTratamientoPropio(data.getTratamiento().getId()));
         } else if (data.getTratamiento() == null) {
             // Si se envía null explícito, limpiar el tratamiento
             cita.setTratamiento(null);

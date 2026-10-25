@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 public interface HistorialRepository extends JpaRepository<HistorialClinico, Integer> {
     Optional<HistorialClinico> findByPaciente(Paciente paciente);
 
+    HistorialClinico findByPaciente_Id(Integer idPaciente);
+
     /** Historiales de la cartera del odontologo conectado (-1 = ADMIN). */
     @Query("SELECT h FROM HistorialClinico h WHERE (:odoId = -1 or h.paciente.odontologo.id = :odoId)")
     List<HistorialClinico> listarDeCartera(@Param("odoId") Integer odoId);

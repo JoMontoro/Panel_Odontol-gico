@@ -62,7 +62,9 @@ public class securityconfig {
                 .requestMatchers("/api/historial/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/api/odontogramas/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/api/presupuestos/**").hasRole("ODONTOLOGO")
-                .requestMatchers("/api/tratamientos/**").hasRole("ODONTOLOGO")
+                /* El catalogo es propio de cada odontologo: el ADMIN supervisor tambien
+                   puede consultarlo (solo lectura), igual que las demas carteras. */
+                .requestMatchers("/api/tratamientos/**").hasAnyRole("ODONTOLOGO", "ADMIN")
                 .requestMatchers("/api/planes-tratamiento/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/api/verificaciones/**").hasRole("ODONTOLOGO")
                 .requestMatchers("/uploads/**").permitAll()

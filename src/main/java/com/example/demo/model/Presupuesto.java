@@ -31,7 +31,7 @@ public class Presupuesto {
     @Enumerated(EnumType.STRING)
     private EstadoPresupuesto estado;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_caso_clinico")
     private CasoClinico casoClinico;
 

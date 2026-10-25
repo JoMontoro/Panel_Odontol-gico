@@ -103,6 +103,13 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<!-- ITEXT PDF (generacion de documentos de consentimiento) -->
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itextpdf</artifactId>
+			<version>5.5.13</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -122,8 +129,13 @@
 <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.13.0</version>
 			<configuration>
+				<source>17</source>
+				<target>17</target>
 				<release>17</release>
+				<fork>true</fork>
+				<executable>C:\Program Files\Java\jdk-17\bin\javac.exe</executable>
 				<annotationProcessorPaths>
 					<path>
 						<groupId>org.projectlombok</groupId>

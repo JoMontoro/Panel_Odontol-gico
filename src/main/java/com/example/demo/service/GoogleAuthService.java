@@ -85,8 +85,8 @@ public class GoogleAuthService {
 
         long exp = 0L;
         Object expClaim = info.get("exp");
-        if (expClaim instanceof Number numero) {
-            exp = numero.longValue();
+        if (expClaim instanceof Number) {
+            exp = ((Number) expClaim).longValue();
         }
         if (exp > 0 && exp * 1000 < System.currentTimeMillis()) {
             throw new GoogleAuthException("La credencial de Google esta vencida. Vuelve a intentarlo.");

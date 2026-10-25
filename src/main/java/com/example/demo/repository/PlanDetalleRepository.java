@@ -16,5 +16,7 @@ public interface PlanDetalleRepository extends JpaRepository<PlanDetalle, Intege
 
     boolean existsByTratamiento_Id(Integer tratamientoId);
 
+    List<PlanDetalle> findByTratamiento_Id(Integer tratamientoId);
+
     long countByPlan_CasoClinico_IdAndEstado(Integer casoId, EstadoDetalle estado);
 }

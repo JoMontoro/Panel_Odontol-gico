@@ -395,6 +395,7 @@ public class PresupuestoService {
         double subtotal = 0.0;
         for (PlanTratamiento plan : planes) {
             if (plan.getEstado() == EstadoPlan.CANCELADO) continue;
+            if (plan.getEstado() == EstadoPlan.COMPLETADO) continue;
             for (PlanDetalle d : planDetalleRepo.findByPlanOrderByOrdenAsc(plan)) {
                 if (d.getEstado() == EstadoDetalle.CANCELADO) continue;
                 if (d.getPrecio() != null) subtotal += d.getPrecio();
@@ -410,7 +411,7 @@ public class PresupuestoService {
      */
     private void exigirTratamientosACotizar(CasoClinico caso) {
         List<PlanTratamiento> planes = planRepo.findByCasoClinico(caso).stream()
-                .filter(p -> p.getEstado() != EstadoPlan.CANCELADO)
+                .filter(p -> p.getEstado() != EstadoPlan.CANCELADO && p.getEstado() != EstadoPlan.COMPLETADO)
                 .collect(java.util.stream.Collectors.toList());
 
         if (planes.isEmpty()) {

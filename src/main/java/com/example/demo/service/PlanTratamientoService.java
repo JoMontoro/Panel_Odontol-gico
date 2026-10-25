@@ -130,6 +130,23 @@ public class PlanTratamientoService {
         return caso;
     }
 
+    /**
+     * El plan solo puede cotizar tratamientos del catalogo propio: el catalogo de
+     * cada odontologo es privado y no se comparte con el colega.
+     */
+    private void exigirTratamientoPropio(Tratamiento tratamiento) {
+        if (sesion.esAdmin(sesion.usuario())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "El rol ADMIN es solo de lectura: no puede armar planes de tratamiento.");
+        }
+        Integer odontoId = sesion.odontologoId();
+        if (tratamiento.getOdontologo() == null
+                || !tratamiento.getOdontologo().getId().equals(odontoId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "El tratamiento \"" + tratamiento.getNombre() + "\" pertenece al catalogo de otro odontologo.");
+        }
+    }
+
     public List<PlanTratamiento> listarPorCaso(Integer casoId) {
         return repo.findByCasoClinico(casoDeCartera(casoId));
     }
@@ -212,6 +229,8 @@ public class PlanTratamientoService {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                             "El tratamiento seleccionado no existe en el catalogo"));
 
+            exigirTratamientoPropio(tratamiento);
+
             if (!Boolean.TRUE.equals(tratamiento.getActivo())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "El tratamiento \"" + tratamiento.getNombre() + "\" esta inactivo. "
@@ -270,7 +289,7 @@ public class PlanTratamientoService {
 
         List<PlanTratamiento> planes = repo.findByCasoClinico(caso);
         PlanTratamiento plan = planes.stream()
-                .filter(p -> p.getEstado() != EstadoPlan.CANCELADO)
+                .filter(p -> p.getEstado() != EstadoPlan.CANCELADO && p.getEstado() != EstadoPlan.COMPLETADO)
                 .findFirst()
                 .orElse(null);
 
@@ -340,7 +359,7 @@ public class PlanTratamientoService {
     private List<Sugerencia> sugerirTratamientos(String texto) {
         List<Sugerencia> resultado = new ArrayList<>();
 
-        for (Tratamiento t : tratamientoRepo.findByActivoTrueOrderByNombreAsc()) {
+        for (Tratamiento t : tratamientoRepo.activosDe(sesion.odontologoId())) {
             String nombre = normalizar(t.getNombre());
             String categoria = normalizar(t.getCategoria());
 
