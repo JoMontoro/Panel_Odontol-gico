@@ -3,10 +3,6 @@ package com.example.demo.dto;
 import com.example.demo.model.TipoProcedimiento;
 import java.time.LocalDateTime;
 
-/**
- * Respuesta del consentimiento informado (sin exponer el base64 completo
- * por defecto para no saturar el listado).
- */
 public class ConsentimientoInformadoResponse {
 
     private Integer id;
@@ -42,7 +38,6 @@ public class ConsentimientoInformadoResponse {
         this.pdfRuta = pdfRuta;
     }
 
-    // Getters y setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public Integer getIdPaciente() { return idPaciente; }

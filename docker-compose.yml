@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql-odontologico:
+    image: mysql:8.0
+    container_name: mysql-odontologico
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: odontologico_db
+      MYSQL_USER: odontologo
+      MYSQL_PASSWORD: odontologo123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - odonto-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  odonto-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

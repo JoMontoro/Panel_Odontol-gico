@@ -42,8 +42,8 @@ public class DataInitializer {
         return args -> {
             asegurarOdontologo(repo, encoder, "Dr.Gina", "odontologo", "Gina", "Reupo",
                     correoGina, "Odontología General", "Gina");
-            asegurarOdontologo(repo, encoder, "Dr.Ruben", "diego", "Ruben", "Cullanco",
-                    correoRuben, "Ortodoncia", "Diego");
+            asegurarOdontologo(repo, encoder, "Dr.Ruben", "ruben", "Ruben", "Montalvo",
+                    correoRuben, "Ortodoncia", "Ruben");
         };
     }
 

@@ -20,8 +20,8 @@ public class ConsentimientoInformado {
     @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_historial_clinico")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_historial_clinico", nullable = false)
     private HistorialClinico historialClinico;
 
     @Enumerated(EnumType.STRING)
